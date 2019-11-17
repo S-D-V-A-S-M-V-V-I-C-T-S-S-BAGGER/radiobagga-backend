@@ -1,19 +1,18 @@
 require 'sinatra'
 require 'sinatra/namespace'
-require 'mongoid'
 
 require './models/queue_item'
+require './controllers/radio_controller'
 
 class RadioBaggaBackend < Sinatra::Base
   register Sinatra::Namespace
 
-  # DB setup
-  Mongoid.load! "mongoid.config"
+  QueueController.run!
 
   # API requests
   namespace '/v1' do
     get '/queue' do
-      QueueItem.all.to_json
+      QueueController.list_queue
     end
   end
 end

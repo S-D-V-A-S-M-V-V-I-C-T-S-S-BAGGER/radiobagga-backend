@@ -1,18 +1,42 @@
 require 'sinatra'
 require 'sinatra/namespace'
 
-require './models/queue_item'
-require './controllers/radio_controller'
+require_relative 'controllers/queue_controller'
 
 class RadioBaggaBackend < Sinatra::Base
   register Sinatra::Namespace
 
-  QueueController.run!
+  @queue = QueueController.new
+
+  before do
+    content_type :json
+  end
 
   # API requests
   namespace '/v1' do
     get '/queue' do
-      QueueController.list_queue
+      _start = params[:start]
+      _count = params[:count]
+      @queue.list_queue(_start, _count)
+    end
+
+    post '/queue' do
+      _filename = params[:name]
+      if _filename.nil? or not Pathname.exist? "uploads/#{_filename}"
+        status 449
+      else
+        @queue.add _filename
+      end
+    end
+
+    post '/upload' do
+      _tempfile = params[:file][:tempfile]
+      _filename = params[:file][:filename]
+      if _tempfile.nil? or _filename.nil?
+        status 449
+      else
+        FileUtils.mv _tempfile.path, "uploads/#{_filename}"
+      end
     end
   end
 end

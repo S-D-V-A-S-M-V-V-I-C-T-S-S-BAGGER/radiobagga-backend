@@ -38,5 +38,14 @@ class RadioBaggaBackend < Sinatra::Base
         FileUtils.mv _tempfile.path, "uploads/#{_filename}"
       end
     end
+
+    get '/search' do
+      _query = params[:query]
+      if _query.nil?
+        Dir['./uploads']
+      else
+        Dir["./uploads/**#{_query}**"]
+      end
+    end
   end
 end

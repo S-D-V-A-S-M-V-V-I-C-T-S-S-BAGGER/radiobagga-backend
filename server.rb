@@ -1,7 +1,6 @@
 require 'sinatra'
-require 'mongoid'
-require 'mongoid-grid_fs'
 require 'sinatra/namespace'
+require 'mongoid'
 
 require './models/queue_item'
 

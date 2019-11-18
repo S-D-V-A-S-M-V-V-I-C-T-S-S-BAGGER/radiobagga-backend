@@ -1,5 +1,6 @@
 require_relative 'radio_controller'
 
+# Controller that handles operations on the queue and decides what song to play
 class QueueController
   @queue = []
   @queue_index = -1
@@ -17,14 +18,47 @@ class QueueController
     end
   end
 
+  # Get the current state of the queue
+  #
+  # == Parameters:
+  # _start::
+  #   Index where to start the queue, defaulting to the current index
+  # _count::
+  #   Amount of queue items to fetch, defaulting to 3
+  #
+  # == Returns:
+  # List of queue items
   def list_queue(_start = @queue_index, _count = 3)
     @queue[_start, _count]
   end
 
+  # Get the current item being played
+  #
+  # == Returns:
+  # Queue item
   def get_current
-    @queue[@queue_index]
+    _current = @queue[@queue_index]
+    if _current.nil?
+      ENV['BAGGA_DEFAULT_SONG']
+    end
+    _current
   end
 
+  # Get the current index in the queue
+  #
+  # == Returns:
+  # Queue index
+  def get_index
+    @queue_index
+  end
+
+  # Add a new song to the queue
+  #
+  # == Parameters:
+  # filename::
+  #   A `string` that has to be an existing file in the `./output` folder
+  # == Returns:
+  # `boolean` value representing success
   def add(filename)
 
     @queue.append filename

@@ -34,6 +34,8 @@ class RadioBaggaBackend < Sinatra::Base
       _filename = params[:file][:filename]
       if _tempfile.nil? or _filename.nil?
         status 449
+      elsif _filename[-3, 4].downcase != ".wav"
+        status 422
       else
         FileUtils.mv _tempfile.path, "uploads/#{_filename}"
       end

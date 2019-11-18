@@ -13,7 +13,7 @@ class QueueController
       @queue_index += 1
     else
       puts 'Falling back to default song'
-      @radio.play_file "default.wav"
+      @radio.play_file ENV['BAGGA_DEFAULT_SONG']
     end
   end
 

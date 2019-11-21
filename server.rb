@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/namespace'
+require 'dotenv/load'
 
 require_relative 'controllers/queue_controller'
 

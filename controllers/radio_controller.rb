@@ -11,6 +11,6 @@ class RadioController
   def play_file(file_name)
     _command = "sox ./uploads/%s -r 22050 -c 1 -b 16 -t wav - | sudo ./fm_transmitter -f %s -" % [file_name, ENV['FM_FREQUENCY']]
     puts "Running: %s" % _command
-    system(_command)
+    system _command
   end
 end

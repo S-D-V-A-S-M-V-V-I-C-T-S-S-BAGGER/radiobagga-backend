@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/namespace'
 require 'dotenv/load'
+require 'pathname'
+require 'fileutils'
 
 require_relative 'controllers/queue_controller'
 
@@ -8,7 +10,10 @@ require_relative 'controllers/queue_controller'
 class RadioBaggaBackend < Sinatra::Base
   register Sinatra::Namespace
 
-  @queue = QueueController.new
+  def initialize
+    super()
+    @queue = QueueController.new
+  end
 
   before do
     content_type :json
@@ -39,7 +44,7 @@ class RadioBaggaBackend < Sinatra::Base
   #   name of the song to be added
   post '/v1/queue' do
     _filename = params[:name]
-    if _filename.nil? or not Pathname.exist? "uploads/#{_filename}"
+    if _filename.nil? or not Pathname.new("./uploads/#{_filename}").exist?
       status 449
     else
       @queue.add _filename

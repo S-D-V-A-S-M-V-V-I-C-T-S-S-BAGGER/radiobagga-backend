@@ -1,20 +1,22 @@
 #!/bin/bash
 
-$CURRENT_DIR='`pwd`'
+echo "Resolving dependencies..."
 
-if [ -f $CURRENT_DIR/fm_transmitter]; then
-  echo ""
-else
-  echo "Resolving dependencies..."
+git clone https://github.com/markondej/fm_transmitter ./remove_me_later
+cd remove_me_later || echo "Error while cloning repository, please check your git install"
 
-  echo `git clone https://github.com/markondej/fm_transmitter`
-  cd fm_transmitter
-
-  echo "Building dependencies..."
-  echo `make`
-  cd ../
-fi
+echo "Building dependencies..."
+make
+mv ./fm_transmitter ../fm_transmitter
+cd ../
+rm -r ./remove_me_later
 
 echo "Installing gem bundle"
 
-echo `bundle install --deployment`
+bundle install --deployment
+
+echo "============================="
+echo "BE SURE TO POPULATE .ENV FILE"
+echo "============================="
+
+cp .env.example .env

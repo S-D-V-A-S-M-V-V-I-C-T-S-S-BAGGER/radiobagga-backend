@@ -2,6 +2,8 @@
 
 echo "Resolving dependencies..."
 
+sudo apt update
+sudo apt install sox -y
 git clone https://github.com/markondej/fm_transmitter ./remove_me_later
 cd remove_me_later || echo "Error while cloning repository, please check your git install"
 

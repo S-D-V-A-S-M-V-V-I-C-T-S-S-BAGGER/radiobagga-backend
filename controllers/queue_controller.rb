@@ -33,7 +33,7 @@ class QueueController
   #
   # == Returns:
   # List of queue items
-  def list_queue(_start = @queue_index, _count = 3)
+  def list_queue(_start, _count)
     @queue[_start.to_i, _count.to_i]
   end
 

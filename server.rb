@@ -3,6 +3,7 @@ require 'sinatra/namespace'
 require 'dotenv/load'
 require 'pathname'
 require 'fileutils'
+require 'json'
 
 require_relative 'controllers/queue_controller'
 
@@ -24,16 +25,16 @@ class RadioBaggaBackend < Sinatra::Base
   #
   # == Parameters:
   # start::
-  #   starting position in the queue, defaults to current position
+  #   starting position in the queue, defaults to 0
   # count::
   #   amount of items to list from the starting position, defaults to 3 items
   #
   # == Returns:
   # Current queue as requested
   get '/v1/queue' do
-    _start = params[:start]
-    _count = params[:count]
-    @queue.list_queue(_start, _count)
+    _start = params[:start] ? params[:start] : 0
+    _count = params[:count] ? params[:count] : 3
+    {:queue => @queue.list_queue(_start, _count)}.to_json
   end
 
   # POST request to `/v1/queue` for adding a song to the queue
@@ -48,6 +49,7 @@ class RadioBaggaBackend < Sinatra::Base
       status 449
     else
       @queue.add _filename
+      status 200
     end
   end
 
@@ -68,6 +70,8 @@ class RadioBaggaBackend < Sinatra::Base
       status 422
     else
       FileUtils.mv _tempfile.path, "uploads/#{_filename}"
+      status 200
+      {:filename => _filename}.to_json
     end
   end
 
@@ -84,9 +88,9 @@ class RadioBaggaBackend < Sinatra::Base
   get '/v1/search' do
     _query = params[:query]
     if _query.nil?
-      Dir['./uploads']
+      {:results => Dir['./uploads/*']}.to_json
     else
-      Dir["./uploads/**#{_query}**"]
+      {:results => Dir["./uploads/**#{_query}**"]}.to_json
     end
   end
 end

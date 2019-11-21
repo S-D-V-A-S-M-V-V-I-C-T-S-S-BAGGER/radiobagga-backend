@@ -11,7 +11,7 @@ echo "Building dependencies..."
 make
 mv ./fm_transmitter ../fm_transmitter
 cd ../
-rm -r ./remove_me_later
+rm -rf ./remove_me_later
 
 echo "Installing gem bundle"
 

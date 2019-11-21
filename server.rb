@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/namespace'
+require 'sinatra/cross_origin'
 require 'dotenv/load'
 require 'pathname'
 require 'fileutils'
@@ -16,7 +17,12 @@ class RadioBaggaBackend < Sinatra::Base
     @queue = QueueController.new
   end
 
+  configure do
+    enable :cross_origin
+  end
+
   before do
+    response.headers['Access-Control-Allow-Origin'] = '*'
     content_type :json
   end
 
@@ -66,7 +72,7 @@ class RadioBaggaBackend < Sinatra::Base
     _filename = params[:file][:filename]
     if _tempfile.nil? or _filename.nil?
       status 449
-    elsif _filename[-3, 4].downcase != ".wav"
+    elsif _filename[-4, 4].downcase != ".wav"
       status 422
     else
       FileUtils.mv _tempfile.path, "uploads/#{_filename}"
@@ -92,5 +98,12 @@ class RadioBaggaBackend < Sinatra::Base
     else
       {:results => Dir["./uploads/**#{_query}**"]}.to_json
     end
+  end
+
+  options "*" do
+    response.headers["Allow"] = "GET, PUT, POST, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-User-Email, X-Auth-Token"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    200
   end
 end

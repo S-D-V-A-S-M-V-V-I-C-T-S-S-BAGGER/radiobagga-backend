@@ -94,9 +94,9 @@ class RadioBaggaBackend < Sinatra::Base
   get '/v1/search' do
     _query = params[:query]
     if _query.nil?
-      {:results => Dir['./uploads/*']}.to_json
+      {:results => Dir['./uploads/*'].each {|item| item[10..-1]}}.to_json
     else
-      {:results => Dir["./uploads/**#{_query}**"]}.to_json
+      {:results => Dir["./uploads/**#{_query}**"].each {|item| item[10..-1]}}.to_json
     end
   end
 

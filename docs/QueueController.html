@@ -217,7 +217,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>A new instance of QueueController.</p>
+<p>Initialize the queue controller with some basic variables, then start playing songs from the queue.</p>
 </div></span>
   
 </li>
@@ -247,6 +247,102 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#run-instance_method" title="#run (instance method)">#<strong>run</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Main run method of the queue controller Infinitely loops and plays either the current song in the queue, or the default song.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_state-instance_method" title="#set_state (instance method)">#<strong>set_state</strong>(enable)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Enable or disables the queue.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#start_queue-instance_method" title="#start_queue (instance method)">#<strong>start_queue</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Wrapper method for starting the queue Checks if a queue is already running to prevent duplicate threads.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#stop_queue-instance_method" title="#stop_queue (instance method)">#<strong>stop_queue</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Wrapper method for stopping the queue Checks if the queue was actually running in the first place.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -265,7 +361,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns a new instance of QueueController</p>
+<p>Initialize the queue controller with some basic variables, then start playing songs from the queue</p>
 
 
   </div>
@@ -279,7 +375,6 @@
       <pre class="lines">
 
 
-6
 7
 8
 9
@@ -287,39 +382,18 @@
 11
 12
 13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24</pre>
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 6</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 7</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
   <span class='ivar'>@queue_index</span> <span class='op'>=</span> <span class='int'>0</span>
   <span class='ivar'>@radio</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="RadioController.html" title="RadioController (class)">RadioController</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-
-  <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
-      <span class='kw'>if</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
-        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Playing queued song!</span><span class='tstring_end'>&#39;</span></span>
-        <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
-        <span class='ivar'>@queue_index</span> <span class='op'>+=</span> <span class='int'>1</span>
-      <span class='kw'>else</span>
-        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Falling back to default song</span><span class='tstring_end'>&#39;</span></span>
-        <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
+  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='id identifier rubyid_start_queue'>start_queue</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -369,12 +443,12 @@
       <pre class="lines">
 
 
-67
-68
-69</pre>
+86
+87
+88</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 67</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 86</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_filename'>filename</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span><span class='period'>.</span><span class='id identifier rubyid_append'>append</span> <span class='id identifier rubyid_filename'>filename</span>
@@ -414,16 +488,16 @@
       <pre class="lines">
 
 
-44
-45
-46
-47
-48
-49
-50</pre>
+63
+64
+65
+66
+67
+68
+69</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 63</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_current'>get_current</span>
   <span class='id identifier rubyid__current'>_current</span> <span class='op'>=</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
@@ -467,12 +541,12 @@
       <pre class="lines">
 
 
-56
-57
-58</pre>
+75
+76
+77</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 56</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_index'>get_index</span>
   <span class='ivar'>@queue_index</span>
@@ -521,15 +595,215 @@
       <pre class="lines">
 
 
-36
-37
-38</pre>
+55
+56
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 36</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 55</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_list_queue'>list_queue</span><span class='lparen'>(</span><span class='id identifier rubyid__start'>_start</span><span class='comma'>,</span> <span class='id identifier rubyid__count'>_count</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='id identifier rubyid__start'>_start</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='comma'>,</span> <span class='id identifier rubyid__count'>_count</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="run-instance_method">
+  
+    #<strong>run</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Main run method of the queue controller Infinitely loops and plays either the current song in the queue, or the default song</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 18</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
+  <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+    <span class='kw'>if</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Playing queued song!</span><span class='tstring_end'>&#39;</span></span>
+      <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
+      <span class='ivar'>@queue_index</span> <span class='op'>+=</span> <span class='int'>1</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Falling back to default song</span><span class='tstring_end'>&#39;</span></span>
+      <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_state-instance_method">
+  
+    #<strong>set_state</strong>(enable)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Enable or disables the queue</p>
+
+<h2 id="label-Parameters-3A">Parameters:</h2>
+<dl class="rdoc-list note-list"><dt>enable
+<dd>
+<p>A `boolean` value whether to start or stop the queue</p>
+</dd></dl>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+95
+96
+97
+98
+99
+100
+101</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 95</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_state'>set_state</span><span class='lparen'>(</span><span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_enable'>enable</span>
+    <span class='id identifier rubyid_start_queue'>start_queue</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_stop_queue'>stop_queue</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_queue-instance_method">
+  
+    #<strong>start_queue</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Wrapper method for starting the queue Checks if a queue is already running to prevent duplicate threads</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 33</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start_queue'>start_queue</span>
+  <span class='ivar'>@queue_runner</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_run'>run</span> <span class='kw'>unless</span> <span class='ivar'>@is_running</span>
+  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="stop_queue-instance_method">
+  
+    #<strong>stop_queue</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Wrapper method for stopping the queue Checks if the queue was actually running in the first place</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+40
+41
+42
+43</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 40</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_stop_queue'>stop_queue</span>
+  <span class='ivar'>@queue_runner</span><span class='period'>.</span><span class='id identifier rubyid_terminate'>terminate</span> <span class='kw'>if</span> <span class='ivar'>@is_running</span>
+  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>false</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -541,7 +815,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Nov 21 16:22:07 2019 by
+  Generated on Sun Nov 24 16:07:06 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.20 (ruby-2.6.5).
 </div>

@@ -198,17 +198,15 @@
 12
 13
 14
-15
-16</pre>
+15</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'controllers/radio_controller.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_play_file'>play_file</span><span class='lparen'>(</span><span class='id identifier rubyid_file_name'>file_name</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid__command'>_command</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sox ./uploads/%s -r 22050 -c 1 -b 16 -t wav - | sudo ./fm_transmitter -f %s -</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='lbracket'>[</span><span class='id identifier rubyid_file_name'>file_name</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FM_FREQUENCY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid__command'>_command</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sox \&quot;./uploads/%s\&quot; -r 22050 -c 1 -b 16 -t wav - | sudo ./fm_transmitter -f %s -</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='lbracket'>[</span><span class='id identifier rubyid_file_name'>file_name</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FM_FREQUENCY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Running: %s</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='id identifier rubyid__command'>_command</span>
-  <span class='comment'># system _command
-</span>  <span class='id identifier rubyid_system'>system</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sleep 5</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_system'>system</span> <span class='id identifier rubyid__command'>_command</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -220,7 +218,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Nov 21 16:22:07 2019 by
+  Generated on Sun Nov 24 16:07:06 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.20 (ruby-2.6.5).
 </div>

@@ -14,7 +14,7 @@ class RadioBaggaBackend < Sinatra::Base
 
   def initialize
     super()
-    @queue = QueueController.new
+    @queue_controller = QueueController.new
   end
 
   configure do
@@ -40,7 +40,7 @@ class RadioBaggaBackend < Sinatra::Base
   get '/v1/queue' do
     _start = params[:start] ? params[:start] : 0
     _count = params[:count] ? params[:count] : 3
-    {:queue => @queue.list_queue(_start, _count)}.to_json
+    {:queue => @queue_controller.list_queue(_start, _count)}.to_json
   end
 
   # POST request to `/v1/queue` for adding a song to the queue
@@ -54,12 +54,12 @@ class RadioBaggaBackend < Sinatra::Base
     if _filename.nil? or not Pathname.new("./uploads/#{_filename}").exist?
       status 449
     else
-      @queue.add _filename
+      @queue_controller.add _filename
       status 200
     end
   end
 
-  # POST request to `/v1/upload` for uploading a new file to be requested.
+  # POST request to `/v1/upload` for uploading a new file to be requested
   # Returns error code 422 if file is not of .WAV format
   # Returns error code 449 if no file is provided
   # Be sure to use encoding-type in the HTML form!
@@ -76,7 +76,6 @@ class RadioBaggaBackend < Sinatra::Base
       status 422
     else
       FileUtils.mv _tempfile.path, "uploads/#{_filename}"
-      status 200
       {:filename => _filename}.to_json
     end
   end
@@ -98,6 +97,30 @@ class RadioBaggaBackend < Sinatra::Base
     else
       {:results => Dir["./uploads/**#{_query}**"].map! {|item| item[10..-1]}}.to_json
     end
+  end
+
+  # GET request to '/v1/index' for getting the current index in the queue
+  # Takes no arguments
+  #
+  # == Returns:
+  # Current index in the queue
+  get '/v1/index' do
+    {:index => @queue_controller.get_index}.to_json
+  end
+
+  # POST request to '/v1/online' for enabling or disabling FM transmission
+  # Takes one argument: enable
+  # Defaults to false
+  #
+  # == Parameters:
+  # enable::
+  #   Enable FM transmission
+  # == Returns:
+  # Status 200 on success
+  # Status 449 on invalid or missing parameter
+  post '/v1/online' do
+    _enable = params[:enable] == 'true'
+    @queue_controller.set_state _enable
   end
 
   options "*" do

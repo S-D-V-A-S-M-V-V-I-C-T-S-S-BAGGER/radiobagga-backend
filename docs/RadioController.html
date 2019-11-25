@@ -198,13 +198,15 @@
 12
 13
 14
-15</pre>
+15
+16</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'controllers/radio_controller.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_play_file'>play_file</span><span class='lparen'>(</span><span class='id identifier rubyid_file_name'>file_name</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid__command'>_command</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sox \&quot;./uploads/%s\&quot; -r 22050 -c 1 -b 16 -t wav - | sudo ./fm_transmitter -f %s -</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='lbracket'>[</span><span class='id identifier rubyid_file_name'>file_name</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FM_FREQUENCY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+  <span class='comment'># pi_fm_rds [-freq freq] [-audio file] [-ppm ppm_error] [-pi pi_code] [-ps ps_text] [-rt rt_text]
+</span>  <span class='id identifier rubyid__command'>_command</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sox -t %s \&quot;./uploads/%s\&quot; -t wav - | sudo ./pi_fm_rds -freq %s -pi 6969 -ps BAGGAFM -rt \&quot;Radio BAGGA - &#39;huts voor de leden\&quot; -audio -</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='lbracket'>[</span><span class='id identifier rubyid_file_name'>file_name</span><span class='lbracket'>[</span><span class='op'>-</span><span class='int'>3</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_file_name'>file_name</span><span class='comma'>,</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>FM_FREQUENCY</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Running: %s</span><span class='tstring_end'>&quot;</span></span> <span class='op'>%</span> <span class='id identifier rubyid__command'>_command</span>
   <span class='id identifier rubyid_system'>system</span> <span class='id identifier rubyid__command'>_command</span>
 <span class='kw'>end</span></pre>
@@ -218,7 +220,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Nov 24 16:07:06 2019 by
+  Generated on Mon Nov 25 09:29:43 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.20 (ruby-2.6.5).
 </div>

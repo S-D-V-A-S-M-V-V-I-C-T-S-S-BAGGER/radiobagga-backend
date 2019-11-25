@@ -11,13 +11,13 @@ else
 fi
 
 git clone https://github.com/ChristopheJacquet/PiFmRds.git ./temp_clone
-cd temp_clone || echo "Error while cloning repository, please check your git install"
+cd temp_clone/src || echo "Error while cloning repository, please check your git install"
 
 echo "Building dependencies..."
 make clean
 make
-mv ./pi_fm_rds ../pi_fm_rds
-cd ../
+mv ./pi_fm_rds ../../pi_fm_rds
+cd ../../
 rm -rf ./temp_clone
 
 echo "Installing gem bundle"

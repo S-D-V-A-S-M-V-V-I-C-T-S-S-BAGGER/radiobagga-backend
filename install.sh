@@ -7,15 +7,16 @@ if test -f "$FILE"; then
     echo "SoX already installed, moving on..."
 else
     sudo apt update
-    sudo apt install sox -y
+    sudo apt install sox libsndfile1-dev -y
 fi
 
-git clone https://github.com/markondej/fm_transmitter ./temp_clone
+git clone https://github.com/ChristopheJacquet/PiFmRds.git ./temp_clone
 cd temp_clone || echo "Error while cloning repository, please check your git install"
 
 echo "Building dependencies..."
+make clean
 make
-mv ./fm_transmitter ../fm_transmitter
+mv ./pi_fm_rds ../pi_fm_rds
 cd ../
 rm -rf ./temp_clone
 

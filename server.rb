@@ -60,7 +60,7 @@ class RadioBaggaBackend < Sinatra::Base
   end
 
   # POST request to `/v1/upload` for uploading a new file to be requested
-  # Returns error code 422 if file is not of .WAV format
+  # Returns error code 422 if file is not of .mp3 or .WAV format
   # Returns error code 449 if no file is provided
   # Be sure to use encoding-type in the HTML form!
   #
@@ -72,7 +72,7 @@ class RadioBaggaBackend < Sinatra::Base
     _filename = params[:file][:filename]
     if _tempfile.nil? or _filename.nil?
       status 449
-    elsif _filename[-4, 4].downcase != ".wav"
+    elsif !%w(.mp3 .wav).include? _filename[-4, 4].downcase
       status 422
     else
       FileUtils.mv _tempfile.path, "uploads/#{_filename}"

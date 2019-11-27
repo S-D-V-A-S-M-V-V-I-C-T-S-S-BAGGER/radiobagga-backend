@@ -265,7 +265,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Main run method of the queue controller Infinitely loops and plays either the current song in the queue, or the default song.</p>
+<p>Wrapper method for running loop.</p>
 </div></span>
   
 </li>
@@ -313,7 +313,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Wrapper method for starting the queue Checks if a queue is already running to prevent duplicate threads.</p>
+<p>Wrapper method for starting the queue Only starts the queue if it wasn&#39;t running already.</p>
 </div></span>
   
 </li>
@@ -337,7 +337,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Wrapper method for stopping the queue Checks if the queue was actually running in the first place.</p>
+<p>Wrapper method for stopping the queue Kills the thread that is currently broadcasting.</p>
 </div></span>
   
 </li>
@@ -382,7 +382,9 @@
 11
 12
 13
-14</pre>
+14
+15
+16</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 7</span>
@@ -391,9 +393,11 @@
   <span class='kw'>super</span><span class='lparen'>(</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
   <span class='ivar'>@queue_index</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='ivar'>@lock</span> <span class='op'>=</span> <span class='const'>Mutex</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
   <span class='ivar'>@radio</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="RadioController.html" title="RadioController (class)">RadioController</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>false</span>
-  <span class='id identifier rubyid_start_queue'>start_queue</span>
+  <span class='ivar'>@radio_runner</span> <span class='op'>||=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_sleep'>sleep</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_run'>run</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -443,12 +447,12 @@
       <pre class="lines">
 
 
-86
-87
-88</pre>
+95
+96
+97</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_filename'>filename</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span><span class='period'>.</span><span class='id identifier rubyid_append'>append</span> <span class='id identifier rubyid_filename'>filename</span>
@@ -488,16 +492,16 @@
       <pre class="lines">
 
 
-63
-64
-65
-66
-67
-68
-69</pre>
+72
+73
+74
+75
+76
+77
+78</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 63</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 72</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_current'>get_current</span>
   <span class='id identifier rubyid__current'>_current</span> <span class='op'>=</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
@@ -541,12 +545,12 @@
       <pre class="lines">
 
 
-75
-76
-77</pre>
+84
+85
+86</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 75</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 84</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_index'>get_index</span>
   <span class='ivar'>@queue_index</span>
@@ -595,12 +599,12 @@
       <pre class="lines">
 
 
-55
-56
-57</pre>
+64
+65
+66</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 55</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_list_queue'>list_queue</span><span class='lparen'>(</span><span class='id identifier rubyid__start'>_start</span><span class='comma'>,</span> <span class='id identifier rubyid__count'>_count</span><span class='rparen'>)</span>
   <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='id identifier rubyid__start'>_start</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='comma'>,</span> <span class='id identifier rubyid__count'>_count</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span><span class='rbracket'>]</span>
@@ -622,7 +626,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Main run method of the queue controller Infinitely loops and plays either the current song in the queue, or the default song</p>
+<p>Wrapper method for running loop</p>
 
 
   </div>
@@ -636,7 +640,6 @@
       <pre class="lines">
 
 
-18
 19
 20
 21
@@ -647,20 +650,27 @@
 26
 27
 28
-29</pre>
+29
+30
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 18</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
-  <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
-    <span class='kw'>if</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Playing queued song!</span><span class='tstring_end'>&#39;</span></span>
-      <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
-      <span class='ivar'>@queue_index</span> <span class='op'>+=</span> <span class='int'>1</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Falling back to default song</span><span class='tstring_end'>&#39;</span></span>
-      <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>starting queue</span><span class='tstring_end'>&#39;</span></span>
+  <span class='ivar'>@radio_runner</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+      <span class='kw'>if</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Playing queued song!</span><span class='tstring_end'>&#39;</span></span>
+        <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='ivar'>@queue</span><span class='lbracket'>[</span><span class='ivar'>@queue_index</span><span class='rbracket'>]</span>
+        <span class='ivar'>@queue_index</span> <span class='op'>+=</span> <span class='int'>1</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Falling back to default song</span><span class='tstring_end'>&#39;</span></span>
+        <span class='ivar'>@radio</span><span class='period'>.</span><span class='id identifier rubyid_play_file'>play_file</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>BAGGA_DEFAULT_SONG</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -701,16 +711,16 @@
       <pre class="lines">
 
 
-95
-96
-97
-98
-99
-100
-101</pre>
+104
+105
+106
+107
+108
+109
+110</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_state'>set_state</span><span class='lparen'>(</span><span class='id identifier rubyid_enable'>enable</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_enable'>enable</span>
@@ -736,7 +746,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Wrapper method for starting the queue Checks if a queue is already running to prevent duplicate threads</p>
+<p>Wrapper method for starting the queue Only starts the queue if it wasn&#39;t running already</p>
 
 
   </div>
@@ -750,17 +760,21 @@
       <pre class="lines">
 
 
-33
-34
-35
-36</pre>
+37
+38
+39
+40
+41
+42</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_queue'>start_queue</span>
-  <span class='ivar'>@queue_runner</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='id identifier rubyid_run'>run</span> <span class='kw'>unless</span> <span class='ivar'>@is_running</span>
-  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='ivar'>@lock</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_run'>run</span> <span class='kw'>unless</span> <span class='ivar'>@is_running</span>
+    <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -779,7 +793,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Wrapper method for stopping the queue Checks if the queue was actually running in the first place</p>
+<p>Wrapper method for stopping the queue Kills the thread that is currently broadcasting</p>
 
 
   </div>
@@ -793,17 +807,23 @@
       <pre class="lines">
 
 
-40
-41
-42
-43</pre>
+46
+47
+48
+49
+50
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 40</span>
+      <pre class="code"><span class="info file"># File 'controllers/queue_controller.rb', line 46</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_stop_queue'>stop_queue</span>
-  <span class='ivar'>@queue_runner</span><span class='period'>.</span><span class='id identifier rubyid_terminate'>terminate</span> <span class='kw'>if</span> <span class='ivar'>@is_running</span>
-  <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='ivar'>@lock</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Stopping queue</span><span class='tstring_end'>&#39;</span></span>
+    <span class='ivar'>@is_running</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='ivar'>@radio_runner</span><span class='period'>.</span><span class='id identifier rubyid_kill'>kill</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -815,7 +835,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Nov 25 09:29:43 2019 by
+  Generated on Wed Nov 27 14:41:37 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.20 (ruby-2.6.5).
 </div>

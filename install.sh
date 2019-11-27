@@ -7,7 +7,7 @@ if test -f "$FILE"; then
     echo "SoX already installed, moving on..."
 else
     sudo apt update
-    sudo apt install sox libsndfile1-dev -y
+    sudo apt install sox libsox-fmt-mp3 libsndfile1-dev -y
 fi
 
 git clone https://github.com/ChristopheJacquet/PiFmRds.git ./temp_clone

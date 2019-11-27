@@ -8,38 +8,47 @@ class QueueController
     super()
     @queue = [ENV['BAGGA_DEFAULT_SONG']]
     @queue_index = 0
+    @lock = Mutex.new
     @radio = RadioController.new
-    @is_running = false
-    start_queue
+    @radio_runner ||= Thread.new { sleep }
+    @is_running = true
+    run
   end
 
-  # Main run method of the queue controller
-  # Infinitely loops and plays either the current song in the queue, or the default song
+  # Wrapper method for running loop
   def run
-    loop do
-      if @queue[@queue_index]
-        puts 'Playing queued song!'
-        @radio.play_file @queue[@queue_index]
-        @queue_index += 1
-      else
-        puts 'Falling back to default song'
-        @radio.play_file ENV['BAGGA_DEFAULT_SONG']
+    puts 'starting queue'
+    @radio_runner = Thread.new do
+      loop do
+        if @queue[@queue_index]
+          puts 'Playing queued song!'
+          @radio.play_file @queue[@queue_index]
+          @queue_index += 1
+        else
+          puts 'Falling back to default song'
+          @radio.play_file ENV['BAGGA_DEFAULT_SONG']
+        end
       end
     end
   end
 
   # Wrapper method for starting the queue
-  # Checks if a queue is already running to prevent duplicate threads
+  # Only starts the queue if it wasn't running already
   def start_queue
-    @queue_runner = Thread.new run unless @is_running
-    @is_running = true
+    @lock.synchronize do
+      run unless @is_running
+      @is_running = true
+    end
   end
 
   # Wrapper method for stopping the queue
-  # Checks if the queue was actually running in the first place
+  # Kills the thread that is currently broadcasting
   def stop_queue
-    @queue_runner.terminate if @is_running
-    @is_running = false
+    @lock.synchronize do
+      puts 'Stopping queue'
+      @is_running = false
+      @radio_runner.kill
+    end
   end
 
   # Get the current state of the queue

@@ -13,5 +13,6 @@ class RadioController
     _command = "sox -t %s \"./uploads/%s\" -t wav - | sudo ./pi_fm_rds -freq %s -pi 6969 -ps BAGGAFM -rt \"Radio BAGGA - 'huts voor de leden\" -audio -" % [file_name[-3..-1], file_name, ENV['FM_FREQUENCY']]
     puts "Running: %s" % _command
     system _command
+    puts 'finished broadcast'
   end
 end
